@@ -62,8 +62,9 @@ RandomStringGenerator generator = new RandomStringGenerator.Builder()
 Set<String> uniqueTokens = generator.generateImmutableSet(5);
 
 // Stream generation
-List<String> streamed = generator.generateStream(10)
-        .map(String::toUpperCase)
+List<String> sortedKeys = generator.generateStream(5)
+        .filter(s -> !Character.isDigit(s.charAt(0)))
+        .sorted()
         .toList();
 ```
 
@@ -71,17 +72,17 @@ List<String> streamed = generator.generateStream(10)
 
 ## Supported Character Pools
 
-| Pool Enum | Character Set | Use Case |
+| CharacterPool Enum | Character Set | Use Case |
 | :--- | :--- | :--- |
-| `UPPERCASE` | `A-Z`[cite: 2] | Voucher codes, Serial numbers |
-| `LOWERCASE` | `a-z`[cite: 2] | Readable slugs |
-| `MIXEDCASE` | `A-Z`, `a-z`[cite: 2] | Case-sensitive identifiers |
-| `HEXADECIMAL` | `0-9`, `A-F`[cite: 2] | Hashes, Color codes, Byte IDs |
-| `ALPHANUMERIC_UPPERCASE` | `A-Z`, `0-9`[cite: 2] | License keys, Gift codes |
-| `ALPHANUMERIC_LOWERCASE` | `a-z`, `0-9`[cite: 2] | Database keys, URL slugs |
-| `ALPHANUMERIC_MIXEDCASE` | `A-Z`, `a-z`, `0-9`[cite: 2] | Session tokens, General IDs |
-| `URL_SAFE` | `A-Z`, `a-z`, `0-9`, `-_`[cite: 2] | Web tokens, Filenames |
-| `BASE58` | Bitcoin Base58 Alphabet[cite: 2] | High readability (no `0`, `O`, `I`, `l`) |
+| `UPPERCASE` | `A-Z` | Voucher codes, Serial numbers[cite: 2] |
+| `LOWERCASE` | `a-z` | Readable slugs[cite: 2] |
+| `MIXEDCASE` | `A-Z`, `a-z` | Case-sensitive identifiers[cite: 2] |
+| `HEXADECIMAL` | `0-9`, `A-F` | Hashes, Color codes, Byte IDs[cite: 2] |
+| `ALPHANUMERIC_UPPERCASE` | `A-Z`, `0-9` | License keys, Gift codes[cite: 2] |
+| `ALPHANUMERIC_LOWERCASE` | `a-z`, `0-9` | Database keys, URL slugs[cite: 2] |
+| `ALPHANUMERIC_MIXEDCASE` | `A-Z`, `a-z`, `0-9` | Session tokens, General IDs[cite: 2] |
+| `URL_SAFE` | `A-Z`, `a-z`, `0-9`, `-_` | Web tokens, Filenames[cite: 2] |
+| `BASE58` | Bitcoin Base58 Alphabet | High readability (no `0`, `O`, `I`, `l`)[cite: 2] |
 
 ---
 
