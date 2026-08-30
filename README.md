@@ -55,17 +55,15 @@ String pin = pinGen.generate(); // e.g., "4921"
 ```java
 RandomStringGenerator generator = new RandomStringGenerator.Builder()
         .pool(CharacterPool.BASE58)
-        .length(10)
+        .length(4)
         .build();
 
-// Generate an unmodifiable set of 5 unique tokens
-Set<String> uniqueTokens = generator.generateImmutableSet(5);
+// Generate an unmodifiable set of unique tokens
+Set<String> uniqueTokens = generator.generateImmutableSet(3); // e.g., ["7kM9", "B3xT", "8wLc"]
 
-// Stream generation
-List<String> sortedKeys = generator.generateStream(5)
-        .filter(s -> !Character.isDigit(s.charAt(0)))
-        .sorted()
-        .toList();
+// Stream generation: assembling a formatted multi-segment license key
+String licenseKey = generator.generateStream(4)
+        .collect(Collectors.joining("-")); // e.g., "7kM9-B3xT-8wLc-2vPq"
 ```
 
 ---
