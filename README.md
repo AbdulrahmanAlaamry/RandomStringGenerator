@@ -4,17 +4,17 @@
 [![License](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE)
 [![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen?style=for-the-badge)](#)
 
-A zero-dependency, fluent Java utility designed for generating customizable random strings, unique identifiers, and mock data using `SecureRandom` by default[cite: 2].
+A zero-dependency, fluent Java utility designed for generating customizable random strings, unique identifiers, and mock data using `SecureRandom` by default.
 
 ---
 
 ## Features
 
-- **Fluent Builder Pattern:** Clean and expressive object construction[cite: 2].
-- **Cryptographically Secure:** Defaults to `SecureRandom` with support for custom PRNG instances[cite: 2].
-- **Built-in Character Pools:** Pre-configured sets including URL-Safe, Base58, Hexadecimal, and Alphanumeric[cite: 1, 2].
-- **Batch & Stream Output:** Generate single strings, unique immutable sets, immutable lists, or Java Streams[cite: 2].
-- **Prefixes & Suffixes:** Direct formatting integration for custom token formats[cite: 2].
+- **Fluent Builder Pattern:** Clean and expressive object construction.
+- **Cryptographically Secure:** Defaults to `SecureRandom` with support for custom PRNG instances.
+- **Built-in Character Pools:** Pre-configured sets including URL-Safe, Base58, Hexadecimal, and Alphanumeric.
+- **Batch & Stream Output:** Generate single strings, unique immutable sets, immutable lists, or Java Streams.
+- **Prefixes & Suffixes:** Direct formatting integration for custom token formats.
 
 ---
 
@@ -74,15 +74,15 @@ List<String> sortedKeys = generator.generateStream(5)
 
 | CharacterPool Enum | Character Set | Use Case |
 | :--- | :--- | :--- |
-| `UPPERCASE` | `A-Z` | Voucher codes, Serial numbers[cite: 2] |
-| `LOWERCASE` | `a-z` | Readable slugs[cite: 2] |
-| `MIXEDCASE` | `A-Z`, `a-z` | Case-sensitive identifiers[cite: 2] |
-| `HEXADECIMAL` | `0-9`, `A-F` | Hashes, Color codes, Byte IDs[cite: 2] |
-| `ALPHANUMERIC_UPPERCASE` | `A-Z`, `0-9` | License keys, Gift codes[cite: 2] |
-| `ALPHANUMERIC_LOWERCASE` | `a-z`, `0-9` | Database keys, URL slugs[cite: 2] |
-| `ALPHANUMERIC_MIXEDCASE` | `A-Z`, `a-z`, `0-9` | Session tokens, General IDs[cite: 2] |
-| `URL_SAFE` | `A-Z`, `a-z`, `0-9`, `-_` | Web tokens, Filenames[cite: 2] |
-| `BASE58` | Bitcoin Base58 Alphabet | High readability (no `0`, `O`, `I`, `l`)[cite: 2] |
+| `UPPERCASE` | `A-Z` | Voucher codes, Serial numbers |
+| `LOWERCASE` | `a-z` | Readable slugs |
+| `MIXEDCASE` | `A-Z`, `a-z` | Case-sensitive identifiers |
+| `HEXADECIMAL` | `0-9`, `A-F` | Hashes, Color codes, Byte IDs |
+| `ALPHANUMERIC_UPPERCASE` | `A-Z`, `0-9` | License keys, Gift codes |
+| `ALPHANUMERIC_LOWERCASE` | `a-z`, `0-9` | Database keys, URL slugs |
+| `ALPHANUMERIC_MIXEDCASE` | `A-Z`, `a-z`, `0-9` | Session tokens, General IDs |
+| `URL_SAFE` | `A-Z`, `a-z`, `0-9`, `-_` | Web tokens, Filenames |
+| `BASE58` | Bitcoin Base58 Alphabet | High readability (no `0`, `O`, `I`, `l`) |
 
 ---
 
