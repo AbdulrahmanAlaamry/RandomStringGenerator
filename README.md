@@ -1,8 +1,8 @@
 # RandomStringGenerator
 
-[![Java Version](https://img.shields.io/badge/Java-17%2B-ED8B00?style=flat&logo=openjdk&logoColor=white)](https://openjdk.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat)](LICENSE)
-[![Build Status](https://github.com/AbdulrahmanAlaamry/RandomStringGenerator/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/AbdulrahmanAlaamry/RandomStringGenerator/actions/workflows/ci.yml)
+[![Java Version](https://img.shields.io/badge/Java-17%2B-007396?style=flat-square&logo=openjdk&logoColor=white)](https://openjdk.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/AbdulrahmanAlaamry/RandomStringGenerator/ci.yml?branch=master&style=flat-square)](https://github.com/AbdulrahmanAlaamry/RandomStringGenerator/actions/workflows/ci.yml)
 
 A zero-dependency, fluent Java utility designed for generating customizable random strings, unique identifiers, and mock data using `SecureRandom` by default.
 
