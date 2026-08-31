@@ -1,9 +1,9 @@
 # RandomStringGenerator
 
-[![Java Version](https://img.shields.io/badge/Java-17%2B-007396?style=flat-square&logo=openjdk&logoColor=white)](https://openjdk.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
-[![Build Status](https://img.shields.io/github/actions/workflow/status/AbdulrahmanAlaamry/RandomStringGenerator/ci.yml?branch=master&style=flat-square&label=Build)](https://github.com/AbdulrahmanAlaamry/RandomStringGenerator/actions/workflows/ci.yml)
-[![](https://jitpack.io/v/AbdulrahmanAlaamry/RandomStringGenerator.svg)](https://jitpack.io/#AbdulrahmanAlaamry/RandomStringGenerator)
+[![Java Version](https://img.shields.io/badge/Java-17%2B-007396?style=flat&logo=openjdk&logoColor=white)](https://openjdk.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat)](LICENSE)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/AbdulrahmanAlaamry/RandomStringGenerator/ci.yml?branch=master&style=flat&label=Build)](https://github.com/AbdulrahmanAlaamry/RandomStringGenerator/actions/workflows/ci.yml)
+[![JitPack](https://jitpack.io/v/AbdulrahmanAlaamry/RandomStringGenerator.svg)](https://jitpack.io/#AbdulrahmanAlaamry/RandomStringGenerator)
 
 
 A zero-dependency, fluent Java utility designed for generating customizable random strings, unique identifiers, and mock data using `SecureRandom` by default.
