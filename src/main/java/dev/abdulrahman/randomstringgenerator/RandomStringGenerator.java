@@ -269,12 +269,4 @@ public class RandomStringGenerator {
         }
         return collection;
     }
-
-    @Deprecated(forRemoval = true)
-    private void populateCollection(Collection<String> collection, int size) {
-        Validator.validateSequenceSize(size);
-        while (collection.size() != size) {
-            collection.add(generate());
-        }
-    }
 }
