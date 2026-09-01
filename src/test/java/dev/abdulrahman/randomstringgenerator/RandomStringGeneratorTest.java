@@ -19,7 +19,14 @@ class RandomStringGeneratorTest {
         RandomStringGenerator generator = new RandomStringGenerator.Builder().build();
         String result = generator.generate();
         assertNotNull(result);
-        assertEquals(5, result.length());
+        assertEquals(16, result.length());
+    }
+
+    @Test
+    void testBuilderWithNullRandom() {
+        NullPointerException exception = assertThrows(NullPointerException.class,
+                () -> new RandomStringGenerator.Builder(null));
+        assertEquals("Random instance cannot be null", exception.getMessage());
     }
 
     @Test
@@ -33,11 +40,11 @@ class RandomStringGeneratorTest {
     void testBuilderLengthValidation() {
         IllegalArgumentException exceptionTooSmall = assertThrows(IllegalArgumentException.class,
                 () -> new RandomStringGenerator.Builder().length(0));
-        assertEquals("Size must be between 1 and 16", exceptionTooSmall.getMessage());
-
-        IllegalArgumentException exceptionTooLarge = assertThrows(IllegalArgumentException.class,
-                () -> new RandomStringGenerator.Builder().length(17));
-        assertEquals("Size must be between 1 and 16", exceptionTooLarge.getMessage());
+        assertEquals("Length parameter must be at least 1", exceptionTooSmall.getMessage());
+        
+        IllegalArgumentException exceptionNegative = assertThrows(IllegalArgumentException.class,
+                () -> new RandomStringGenerator.Builder().length(-5));
+        assertEquals("Length parameter must be at least 1", exceptionNegative.getMessage());
     }
 
     @ParameterizedTest
@@ -75,6 +82,25 @@ class RandomStringGeneratorTest {
     }
 
     @Test
+    void testCustomPoolValidation() {
+        IllegalArgumentException exception1 = assertThrows(IllegalArgumentException.class,
+                () -> new RandomStringGenerator.Builder().customPool((char[]) null));
+        assertEquals("Alphabet pool cannot be null or empty", exception1.getMessage());
+
+        IllegalArgumentException exception2 = assertThrows(IllegalArgumentException.class,
+                () -> new RandomStringGenerator.Builder().customPool(new char[0]));
+        assertEquals("Alphabet pool cannot be null or empty", exception2.getMessage());
+
+        IllegalArgumentException exception3 = assertThrows(IllegalArgumentException.class,
+                () -> new RandomStringGenerator.Builder().customPool((String) null));
+        assertEquals("Alphabet pool cannot be null or empty", exception3.getMessage());
+
+        IllegalArgumentException exception4 = assertThrows(IllegalArgumentException.class,
+                () -> new RandomStringGenerator.Builder().customPool(""));
+        assertEquals("Alphabet pool cannot be null or empty", exception4.getMessage());
+    }
+
+    @Test
     void testPrefixAndSuffix() {
         RandomStringGenerator generator = new RandomStringGenerator.Builder()
                 .prefix("PRE-")
@@ -88,12 +114,31 @@ class RandomStringGeneratorTest {
     }
 
     @Test
+    void testNullPrefixAndSuffix() {
+        RandomStringGenerator generator = new RandomStringGenerator.Builder()
+                .prefix(null)
+                .suffix(null)
+                .length(5)
+                .build();
+        String result = generator.generate();
+        assertEquals(5, result.length());
+    }
+
+    @Test
     void testGenerateOverrideLength() {
         RandomStringGenerator generator = new RandomStringGenerator.Builder()
                 .length(5)
                 .build();
         String result = generator.generate(10);
         assertEquals(10, result.length());
+    }
+    
+    @Test
+    void testGenerateOverrideLengthValidation() {
+        RandomStringGenerator generator = new RandomStringGenerator.Builder().build();
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> generator.generate(0));
+        assertEquals("Length parameter must be at least 1", exception.getMessage());
     }
     
     @Test
@@ -113,7 +158,7 @@ class RandomStringGeneratorTest {
     void testGenerateImmutableList() {
         RandomStringGenerator generator = new RandomStringGenerator.Builder().length(5).build();
         List<String> list = generator.generateImmutableList();
-        assertEquals(8, list.size());
+        assertEquals(10, list.size());
         assertThrows(UnsupportedOperationException.class, () -> list.add("test"));
     }
 
@@ -129,7 +174,7 @@ class RandomStringGeneratorTest {
     void testGenerateImmutableSet() {
         RandomStringGenerator generator = new RandomStringGenerator.Builder().length(5).build();
         Set<String> set = generator.generateImmutableSet();
-        assertEquals(8, set.size());
+        assertEquals(10, set.size());
         assertThrows(UnsupportedOperationException.class, () -> set.add("test"));
     }
 
@@ -140,21 +185,42 @@ class RandomStringGeneratorTest {
         assertEquals(15, set.size());
         assertThrows(UnsupportedOperationException.class, () -> set.add("test"));
     }
+    
+    @Test
+    void testCollectionSizeValidation() {
+        RandomStringGenerator generator = new RandomStringGenerator.Builder().build();
+        
+        IllegalArgumentException exception1 = assertThrows(IllegalArgumentException.class,
+                () -> generator.generateImmutableList(-5));
+        assertEquals("Size parameter must be at least 1", exception1.getMessage());
+
+        IllegalArgumentException exception2 = assertThrows(IllegalArgumentException.class,
+                () -> generator.generateImmutableSet(-5));
+        assertEquals("Size parameter must be at least 1", exception2.getMessage());
+    }
 
     @Test
     void testGenerateStream() {
         RandomStringGenerator generator = new RandomStringGenerator.Builder().length(5).build();
         Stream<String> stream = generator.generateStream();
-        List<String> result = stream.limit(8).collect(Collectors.toList());
-        assertEquals(8, result.size());
+        List<String> result = stream.collect(Collectors.toList());
+        assertEquals(10, result.size());
     }
 
     @Test
     void testGenerateStreamWithSize() {
         RandomStringGenerator generator = new RandomStringGenerator.Builder().length(5).build();
-        Stream<String> stream = generator.generateStream(10);
+        Stream<String> stream = generator.generateStream(15);
         List<String> result = stream.collect(Collectors.toList());
-        assertEquals(10, result.size());
+        assertEquals(15, result.size());
+    }
+
+    @Test
+    void testGenerateStreamWithNegativeSize() {
+        RandomStringGenerator generator = new RandomStringGenerator.Builder().length(5).build();
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, 
+                () -> generator.generateStream(-5));
+        assertEquals("Size parameter must be at least 1", exception.getMessage());
     }
 
     @Test
@@ -165,8 +231,20 @@ class RandomStringGeneratorTest {
                 .build(); // permutations = 1^1 = 1
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> generator.generateImmutableList(2));
-        assertTrue(exception.getMessage().contains("Size parameter must be between 1 and the number of possible permutations"));
+                () -> generator.generateImmutableSet(2));
+        assertTrue(exception.getMessage().contains("Cannot generate more unique strings than possible permutations"));
+    }
+    
+    @Test
+    void testPopulateCollectionValidationAllowsListDuplicates() {
+        RandomStringGenerator generator = new RandomStringGenerator.Builder()
+                .customPool("A")
+                .length(1)
+                .build(); // permutations = 1^1 = 1
+
+        // This should NOT throw an exception because Lists allow duplicates
+        List<String> list = generator.generateImmutableList(5);
+        assertEquals(5, list.size());
     }
 
     @Test
