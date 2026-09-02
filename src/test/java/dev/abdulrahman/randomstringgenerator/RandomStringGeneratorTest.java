@@ -248,6 +248,48 @@ class RandomStringGeneratorTest {
     }
 
     @Test
+    void testGenerateImmutableListWithOverrideLength() {
+        RandomStringGenerator generator = new RandomStringGenerator.Builder().length(5).build();
+        List<String> list = generator.generateImmutableList(10, 8);
+        assertEquals(10, list.size());
+        assertEquals(8, list.get(0).length());
+    }
+
+    @Test
+    void testGenerateImmutableSetWithOverrideLength() {
+        RandomStringGenerator generator = new RandomStringGenerator.Builder().length(5).build();
+        Set<String> set = generator.generateImmutableSet(10, 8);
+        assertEquals(10, set.size());
+        assertEquals(8, set.iterator().next().length());
+    }
+
+    @Test
+    void testGenerateStreamWithOverrideLength() {
+        RandomStringGenerator generator = new RandomStringGenerator.Builder().length(5).build();
+        Stream<String> stream = generator.generateStream(10, 8);
+        List<String> list = stream.collect(Collectors.toList());
+        assertEquals(10, list.size());
+        assertEquals(8, list.get(0).length());
+    }
+
+    @Test
+    void testEagerValidationForOverrideLength() {
+        RandomStringGenerator generator = new RandomStringGenerator.Builder().build();
+
+        IllegalArgumentException ex1 = assertThrows(IllegalArgumentException.class, 
+            () -> generator.generateImmutableList(10, -1));
+        assertEquals("Length parameter must be at least 1", ex1.getMessage());
+
+        IllegalArgumentException ex2 = assertThrows(IllegalArgumentException.class, 
+            () -> generator.generateImmutableSet(10, -1));
+        assertEquals("Length parameter must be at least 1", ex2.getMessage());
+
+        IllegalArgumentException ex3 = assertThrows(IllegalArgumentException.class, 
+            () -> generator.generateStream(10, -1));
+        assertEquals("Length parameter must be at least 1", ex3.getMessage());
+    }
+
+    @Test
     void testDeterminismWithSeededRandom() {
         Random random1 = new Random(12345);
         RandomStringGenerator generator1 = new RandomStringGenerator.Builder(random1).length(10).build();

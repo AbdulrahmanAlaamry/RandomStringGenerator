@@ -16,6 +16,9 @@ import java.util.stream.Stream;
  * {@link Random} instance is also thread-safe (like {@link SecureRandom}).
  */
 public class RandomStringGenerator {
+    private static final int DEFAULT_STRING_LENGTH = 16;
+    private static final int DEFAULT_SEQUENCE_SIZE = 10;
+
     private final int length;
     private final char[] alphabet;
     private final Random random;
@@ -54,7 +57,7 @@ public class RandomStringGenerator {
          * @throws NullPointerException if random is null
          */
         public Builder(Random random) {
-            this.length = 16;
+            this.length = DEFAULT_STRING_LENGTH;
             this.alphabet = getAlphabetForCase(CharacterPool.ALPHANUMERIC_MIXEDCASE);
             this.random = Objects.requireNonNull(random, "Random instance cannot be null");
             this.prefix = "";
@@ -195,7 +198,7 @@ public class RandomStringGenerator {
      * @return an unmodifiable list of generated strings
      */
     public List<String> generateImmutableList() {
-        return generateImmutableList(10);
+        return generateImmutableList(DEFAULT_SEQUENCE_SIZE);
     }
 
     /**
@@ -206,10 +209,24 @@ public class RandomStringGenerator {
      * @throws IllegalArgumentException if size is less than 1
      */
     public List<String> generateImmutableList(int size) {
+        return generateImmutableList(size, length);
+    }
+
+    /**
+     * Generates an immutable list of random strings overriding the default string length.
+     *
+     * @param size           the number of strings to generate
+     * @param overrideLength the length of the random portion of each string
+     * @return an unmodifiable list of generated strings
+     * @throws IllegalArgumentException if size or overrideLength is less than 1
+     */
+    public List<String> generateImmutableList(int size, int overrideLength) {
+        Validator.validateStringLength(overrideLength);
         return List.copyOf(
                 generateCollection(
                         ArrayList::new,
-                        size
+                        size,
+                        overrideLength
                 )
         );
     }
@@ -220,7 +237,7 @@ public class RandomStringGenerator {
      * @return an unmodifiable set of unique generated strings
      */
     public Set<String> generateImmutableSet() {
-        return generateImmutableSet(10);
+        return generateImmutableSet(DEFAULT_SEQUENCE_SIZE);
     }
 
     /**
@@ -232,11 +249,27 @@ public class RandomStringGenerator {
      *                                  size exceeds the total number of possible unique permutations
      */
     public Set<String> generateImmutableSet(int size) {
-        Validator.validateSetPermutations(size, permutations);
+        return generateImmutableSet(size, length);
+    }
+
+    /**
+     * Generates an immutable set of unique random strings overriding the default string length.
+     *
+     * @param size           the number of unique strings to generate
+     * @param overrideLength the length of the random portion of each string
+     * @return an unmodifiable set of unique generated strings
+     * @throws IllegalArgumentException if size or overrideLength is less than 1, or if the requested
+     *                                  size exceeds the total number of possible unique permutations
+     */
+    public Set<String> generateImmutableSet(int size, int overrideLength) {
+        Validator.validateStringLength(overrideLength);
+        double overridePermutations = Math.pow(alphabet.length, overrideLength);
+        Validator.validateSetPermutations(size, overridePermutations);
         return Set.copyOf(
                 generateCollection(
                         HashSet::new,
-                        size
+                        size,
+                        overrideLength
                 )
         );
     }
@@ -247,7 +280,7 @@ public class RandomStringGenerator {
      * @return a stream containing 10 generated strings
      */
     public Stream<String> generateStream() {
-        return generateStream(10);
+        return generateStream(DEFAULT_SEQUENCE_SIZE);
     }
 
     /**
@@ -257,15 +290,29 @@ public class RandomStringGenerator {
      * @return a stream containing the specified number of generated strings
      */
     public Stream<String> generateStream(int size) {
-        Validator.validateSequenceSize(size);
-        return Stream.generate(this::generate).limit(size);
+        return generateStream(size, length);
     }
 
-    private <T extends Collection<String>> T generateCollection(IntFunction<T> collectionFactory, int size) {
+    /**
+     * Creates a stream of randomly generated strings overriding the default string length.
+     *
+     * @param size           the number of strings the stream will emit
+     * @param overrideLength the length of the random portion of each string
+     * @return a stream containing the specified number of generated strings
+     * @throws IllegalArgumentException if size or overrideLength is less than 1
+     */
+    public Stream<String> generateStream(int size, int overrideLength) {
+        Validator.validateSequenceSize(size);
+        Validator.validateStringLength(overrideLength);
+        return Stream.generate(() -> generate(overrideLength)).limit(size);
+    }
+
+    private <T extends Collection<String>> T generateCollection(IntFunction<T> collectionFactory,
+                                                                int size, int overrideLength) {
         Validator.validateSequenceSize(size);
         T collection = collectionFactory.apply(size); // Instantiates the ArrayList or HashSet safely
         while (collection.size() != size) {
-            collection.add(generate());
+            collection.add(generate(overrideLength));
         }
         return collection;
     }
