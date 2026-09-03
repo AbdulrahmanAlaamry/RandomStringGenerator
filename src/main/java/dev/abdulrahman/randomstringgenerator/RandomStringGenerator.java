@@ -12,11 +12,21 @@ import java.util.stream.Stream;
  * character pools (alphabets), prefixes, suffixes, and the underlying
  * source of randomness.
  * <p>
+ * <b>Terminology:</b>
+ * <ul>
+ *     <li><b>Length:</b> Refers to the number of characters in a generated String.</li>
+ *     <li><b>Sequence:</b> An umbrella term used in this API to describe any grouped output of generated strings (e.g., List, Set, or Stream).</li>
+ *     <li><b>Size:</b> Refers to the number of elements in a generated sequence.</li>
+ * </ul>
+ * <p>
  * Instances of this class are immutable and thread-safe, assuming the provided
  * {@link Random} instance is also thread-safe (like {@link SecureRandom}).
  */
 public class RandomStringGenerator {
+    /** The default number of characters in a generated string. */
     private static final int DEFAULT_STRING_LENGTH = 16;
+    
+    /** The default number of strings generated when requesting a sequence. */
     private static final int DEFAULT_SEQUENCE_SIZE = 10;
 
     private final int length, interval;
