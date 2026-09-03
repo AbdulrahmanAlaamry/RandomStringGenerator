@@ -19,11 +19,11 @@ public class RandomStringGenerator {
     private static final int DEFAULT_STRING_LENGTH = 16;
     private static final int DEFAULT_SEQUENCE_SIZE = 10;
 
-    private final int length;
+    private final int length, interval;
     private final char[] alphabet;
     private final Random random;
     private final String prefix, suffix;
-    private final double permutations;
+    private final char delimiter;
 
     private RandomStringGenerator(Builder builder) {
         this.length = builder.length;
@@ -31,17 +31,19 @@ public class RandomStringGenerator {
         this.random = builder.random;
         this.prefix = builder.prefix;
         this.suffix = builder.suffix;
-        this.permutations = Math.pow(alphabet.length, this.length);
+        this.interval = builder.interval;
+        this.delimiter = builder.separator;
     }
 
     /**
      * Builder for constructing {@link RandomStringGenerator} instances.
      */
     public static class Builder {
-        private int length;
+        private int length, interval;
         private char[] alphabet;
         private final Random random;
         private String prefix, suffix;
+        private char separator;
 
         /**
          * Creates a new Builder using a cryptographically strong {@link SecureRandom} instance.
@@ -62,6 +64,8 @@ public class RandomStringGenerator {
             this.random = Objects.requireNonNull(random, "Random instance cannot be null");
             this.prefix = "";
             this.suffix = "";
+            this.separator = '\0';
+            this.interval = 0;
         }
 
         /**
@@ -137,6 +141,52 @@ public class RandomStringGenerator {
         }
 
         /**
+         * Sets a delimiter to be inserted at regular intervals within the generated string.
+         *
+         * @param separator the character to insert as a delimiter
+         * @param interval  the number of characters between each delimiter
+         * @return this builder
+         * @throws IllegalArgumentException if the interval is negative
+         */
+        public Builder delimiter(char separator, int interval) {
+            Validator.validateDelimiterInterval(interval);
+            this.interval = interval;
+            this.separator = separator;
+            return this;
+        }
+
+        /**
+         * Excludes specific characters from the currently configured alphabet pool.
+         * <p>
+         * <b>Note:</b> Because this method filters the currently configured alphabet, 
+         * you must call this method <i>after</i> calling {@link #pool(CharacterPool)} 
+         * or {@link #customPool(String)}. If you call this method before setting a pool, 
+         * the exclusion will be overwritten.
+         *
+         * @param characters the characters to exclude
+         * @return this builder
+         * @throws IllegalArgumentException if excluding the characters results in an empty pool
+         */
+        public Builder exclude(char... characters) {
+            if (characters == null || characters.length == 0) return this;
+
+            String excludeStr = new String(characters);
+            StringBuilder updatedAlphabet = new StringBuilder();
+
+            for (char c : this.alphabet) {
+                if (excludeStr.indexOf(c) == -1) {
+                    updatedAlphabet.append(c);
+                }
+            }
+
+            char[] newAlphabet = updatedAlphabet.toString().toCharArray();
+            Validator.validateCustomPool(newAlphabet);
+            
+            this.alphabet = newAlphabet;
+            return this;
+        }
+
+        /**
          * Builds and returns a new {@link RandomStringGenerator} instance.
          *
          * @return a configured RandomStringGenerator
@@ -183,13 +233,30 @@ public class RandomStringGenerator {
      */
     public String generate(int overrideLength) {
         Validator.validateStringLength(overrideLength);
-        StringBuilder sb = new StringBuilder(prefix.length() + overrideLength + suffix.length());
+        int capacity = computeStringBuilderCapacity(overrideLength);
+        StringBuilder sb = new StringBuilder(capacity);
         sb.append(prefix);
         for (int i = 0; i < overrideLength; i++) {
+            if (isValidInterval(i) && isAtInterval(i)) {
+                sb.append(delimiter);
+            }
             sb.append(randomChar());
         }
         sb.append(suffix);
         return sb.toString();
+    }
+
+    private int computeStringBuilderCapacity(int overrideLength) {
+        int delimiterCount = (interval > 0) ? (overrideLength - 1) / interval : 0;
+        return prefix.length() + overrideLength + suffix.length() + delimiterCount;
+    }
+
+    private boolean isValidInterval(int iteration) {
+        return iteration != 0 && interval != 0;
+    }
+
+    private boolean isAtInterval(int iteration) {
+        return iteration % interval == 0;
     }
 
     /**

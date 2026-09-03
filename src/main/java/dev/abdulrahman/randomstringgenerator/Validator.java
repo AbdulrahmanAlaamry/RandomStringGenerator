@@ -13,6 +13,12 @@ class Validator {
         }
     }
 
+    static void validateDelimiterInterval(int interval) {
+        if (interval < 0) {
+            throw new IllegalArgumentException("Interval parameter must be positive");
+        }
+    }
+
     static void validateSetPermutations(int size, double permutations) {
         if (size > permutations) {
             throw new IllegalArgumentException("Cannot generate more unique strings than possible permutations");

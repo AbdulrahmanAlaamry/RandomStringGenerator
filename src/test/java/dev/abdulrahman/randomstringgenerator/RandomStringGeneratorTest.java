@@ -290,6 +290,100 @@ class RandomStringGeneratorTest {
     }
 
     @Test
+    void testDelimiter() {
+        RandomStringGenerator generator = new RandomStringGenerator.Builder()
+                .length(5)
+                .delimiter('-', 2)
+                .build();
+        String result = generator.generate();
+        assertEquals(7, result.length());
+        assertEquals('-', result.charAt(2));
+        assertEquals('-', result.charAt(5));
+        assertTrue(result.matches("^[a-zA-Z0-9]{2}-[a-zA-Z0-9]{2}-[a-zA-Z0-9]{1}$"));
+    }
+
+    @Test
+    void testDelimiterWithIntervalOne() {
+        RandomStringGenerator generator = new RandomStringGenerator.Builder()
+                .length(3)
+                .delimiter('-', 1)
+                .build();
+        String result = generator.generate();
+        assertEquals(5, result.length());
+        assertTrue(result.matches("^[a-zA-Z0-9]-[a-zA-Z0-9]-[a-zA-Z0-9]$"));
+    }
+
+    @Test
+    void testDelimiterWithIntervalZero() {
+        RandomStringGenerator generator = new RandomStringGenerator.Builder()
+                .length(3)
+                .delimiter('-', 0)
+                .build();
+        String result = generator.generate();
+        assertEquals(3, result.length());
+        assertFalse(result.contains("-"));
+    }
+
+    @Test
+    void testDelimiterWithIntervalLargerThanLength() {
+        RandomStringGenerator generator = new RandomStringGenerator.Builder()
+                .length(3)
+                .delimiter('-', 5)
+                .build();
+        String result = generator.generate();
+        assertEquals(3, result.length());
+        assertFalse(result.contains("-"));
+    }
+
+    @Test
+    void testDelimiterValidation() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, 
+            () -> new RandomStringGenerator.Builder().delimiter('-', -1));
+        assertEquals("Interval parameter must be positive", ex.getMessage());
+    }
+
+    @Test
+    void testExclude() {
+        RandomStringGenerator generator = new RandomStringGenerator.Builder()
+                .customPool("ABC")
+                .exclude('C')
+                .length(10)
+                .build();
+        String result = generator.generate();
+        assertTrue(result.matches("^[AB]{10}$"));
+    }
+
+    @Test
+    void testExcludeAllCharacters() {
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class,
+                () -> new RandomStringGenerator.Builder().customPool("A").exclude('A'));
+        assertEquals("Alphabet pool cannot be null or empty", ex.getMessage());
+    }
+
+    @Test
+    void testExcludeCharactersNotInPool() {
+        RandomStringGenerator generator = new RandomStringGenerator.Builder()
+                .customPool("A")
+                .exclude('B')
+                .length(5)
+                .build();
+        String result = generator.generate();
+        assertEquals("AAAAA", result);
+    }
+
+    @Test
+    void testExcludeMultipleCalls() {
+        RandomStringGenerator generator = new RandomStringGenerator.Builder()
+                .customPool("ABC")
+                .exclude('A')
+                .exclude('B')
+                .length(5)
+                .build();
+        String result = generator.generate();
+        assertEquals("CCCCC", result);
+    }
+
+    @Test
     void testDeterminismWithSeededRandom() {
         Random random1 = new Random(12345);
         RandomStringGenerator generator1 = new RandomStringGenerator.Builder(random1).length(10).build();
