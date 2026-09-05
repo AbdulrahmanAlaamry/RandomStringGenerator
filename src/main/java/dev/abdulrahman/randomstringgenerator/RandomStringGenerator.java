@@ -96,8 +96,10 @@ public class RandomStringGenerator {
          *
          * @param characterPool the preset character pool to use
          * @return this builder
+         * @throws NullPointerException if characterPool is null
          */
         public Builder pool(CharacterPool characterPool) {
+            Objects.requireNonNull(characterPool, "Character pool cannot be null");
             this.alphabet = getAlphabetForCase(characterPool);
             return this;
         }
